@@ -1,0 +1,118 @@
+﻿<!--таблица логов-->
+<div id="logs" class="serverInfo">    
+    <table id="logTable">
+           
+    </table>    
+</div>
+
+<!--модальное окно-->
+<div id="modalWindow" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">RKNet ApiServer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="word-wrap:break-word;overflow:auto">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+
+<script>
+        //вывод строк лога
+        function printLog(data){                      
+            
+            var log = '';
+            
+            log += '<tr id="' + count + '">';
+            log += '<td class="datetime">'      + data.Datetime     + '</td>';
+            log += '<td class="client">'        + data.Client       + '</td>';
+            log += '<td class="action">'        + data.Action       + '</td>';
+            
+            if(data.ReqBody.length > 0)
+            {
+                log += '<td class="body"> <a href="#" onclick="ClickLink(this)" data="'+ data.ReqBody + '">body</a></td>';
+            }
+            else
+            {
+                log += '<td class="body">'      + data.ReqBody         + '</td>';
+            }
+            
+            var color = "black";
+            if(data.Status.Code >= 200)
+            {
+                color = "green";
+            }
+            if(data.Status.Code >= 300)
+            {
+                color = "blue";
+            }
+            if(data.Status.Code >= 400)
+            {
+                color = "red";
+            }
+            if(data.Status.Code >= 500)
+            {
+                color = "darkred";
+            }
+
+            log += '<td class="statusName ' + color + '">'    + data.Status.Name   + '</td>';
+            log += '<td class="statusCode ' + color + '">'    + data.Status.Code   + '</td>';
+
+            log += '<td class="url">'           + data.Url            + '</td>';
+            log += '</tr>';
+
+            $('#logTable').prepend(log);
+        }
+
+        // удлаение строк логов сверх лимита
+        function RemoveLogs(count){
+            var max = 300;
+            var delnum = count-max;
+            
+            if(delnum > 0){                
+                $('#logTable').children('TR').each(function(){
+                    if($(this).attr('id') < delnum)
+                    {
+                        $(this).remove();
+                        //alert(delnum);
+                    }
+                });
+            }
+        }
+
+        var count = 0;
+        var hubConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/eventshub")
+            .build();
+ 
+        hubConnection.on('Logging', function (data) {
+            printLog($.parseJSON(data));
+            count++;
+            RemoveLogs(count);
+        });         
+
+        hubConnection.start().then(function () {
+            //hubConnection.invoke('SendLog');
+        })
+        .catch(function (err) {
+            alert(err.toString());
+        });    
+        
+        // модальное окно с данными ссылки
+        function ClickLink(el){
+            var data = $(el).attr('data');
+            var modal = $('#modalWindow');
+            modal.find('.modal-body').text(data);
+            modal.modal('show');
+        };
+
+</script>

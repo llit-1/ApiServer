@@ -1,0 +1,25 @@
+﻿@model List<RKNet_Model.CashClient.CashClient>
+
+<table id="logTable">
+            <tr>
+               <th>Торговая точка</th>
+               <th>Касса</th>
+               <th>Ip адрес</th>
+               <th>ЯндексЕда</th>
+               <th>DeliveryClub</th>
+               <th>Принтер</th>
+               <th>Версия клиента</th>
+           </tr>
+           @foreach(var client in Model.OrderBy(c => c.TTName))
+           {
+               <tr>
+                   <td>@client.TTName</td>
+                   <td>@client.CashName</td>
+                   <td>@client.CashIp</td>
+                   <td>@client.YandexCount</td>
+                   <td>@client.DeliveryCount</td>
+                   <td>@client.PrinterName</td>
+                   <td>@client.Version</td>
+               </tr>
+           }
+</table>    

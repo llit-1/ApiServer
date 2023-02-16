@@ -1,0 +1,69 @@
+/* _content/RKNET_ApiServer/Views/Shared/_Layout.cshtml.rz.scp.css */
+/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+a.navbar-brand[b-77f3iagj05] {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a[b-77f3iagj05] {
+  color: #0077CC;
+}
+
+.btn-primary[b-77f3iagj05] {
+  color: #FFF;
+  background-color: #1B6EC2;
+  border-color: #1861AC;
+}
+
+.nav-pills .nav-link.active[b-77f3iagj05], .nav-pills .show > .nav-link[b-77f3iagj05] {
+  color: #FFF;
+  background-color: #1B6EC2;
+  border-color: #1861AC;
+}
+
+.border-top[b-77f3iagj05] {
+  border-top: 1px solid #E5E5E5;
+}
+
+.border-bottom[b-77f3iagj05] {
+  border-bottom: 1px solid #E5E5E5;
+}
+
+.box-shadow[b-77f3iagj05] {
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+}
+
+button.accept-policy[b-77f3iagj05] {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+.footer[b-77f3iagj05] {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}
+
+#swaggerFrame {
+  width: 100%;
+  height: calc(100vh - 155px);
+}
+
+.pb-3 {
+  padding: 0 !important;
+}
+
+#ClientsTable td {
+  border-bottom: 1px solid #CBCBCB;
+  padding-top: 5px;
+  padding-right: 20px;
+}
+
+#ClientsTable th {
+  padding-bottom: 10px;
+  padding-right: 50px;
+}

@@ -1,0 +1,33 @@
+﻿<!--таблица кассовых клиентов-->
+<div id="ClientsTable" class="serverInfo">    
+    
+</div>
+
+
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+
+<script>    
+        var hubConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/eventshub")
+            .build();
+ 
+        hubConnection.on('CashClientsToWeb', function () 
+        {
+            $('#ClientsTable').load('/Home/ClientsTable');
+        });         
+
+        hubConnection.start().then(function () 
+        {
+            //hubConnection.invoke('SendLog');
+        })
+        .catch(function (err) 
+        {
+            alert(err.toString());
+        });    
+
+        // по загрузке страницы
+        document.addEventListener("DOMContentLoaded", function(event) 
+        { 
+            $('#ClientsTable').load('/Home/ClientsTable');
+        });                
+</script>

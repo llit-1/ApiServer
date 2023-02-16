@@ -1,0 +1,170 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+  background-color: #EFEFEF;
+  overflow-y: hidden;
+}
+
+footer {
+  text-align: center;
+  background-color: #FFFFFF;
+}
+
+#background {
+  background-image: url('/css/rknet_avatar.svg');
+  height: 100%;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-size: 100px;
+  background-position: center;
+  opacity: 0.1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.content {
+  height: 100%;
+  width: 100%;
+  padding: 0 10px 10px;
+}
+
+#logo {
+  width: 28px;
+  /*+placement: float-left;*/
+  float: left;
+  position: relative;
+  left: 0;
+  top: 0;
+  margin-right: 5px;
+  margin-top: -4px;
+  margin-left: 3px;
+}
+
+#llbw {
+  width: 125px;
+  opacity: 0.5;
+}
+
+#hd {
+  margin-top: -9px;
+  padding: 0;
+  margin-left: 40px;
+}
+
+#ver {
+  font-size: 10px;
+  font-weight: bold;
+  margin: -15px 0 -5px 41px;
+}
+
+.serverInfo {
+  height: calc(100vh - 155px);
+  overflow-y: scroll;
+}
+
+#logTable {
+  font-size: 11px;
+  padding: 0px 0 0px 0px;
+  margin: 0px 0 0px 0px;
+}
+
+#logTable tr {
+  /*margin-bottom: 32px;*/
+  height: 16px;
+  /*background-color: #EB9696;*/
+  /*border: 3px solid #EFEFEF;*/
+}
+
+#logTable td {
+  padding-right: 25px;
+}
+
+#logTable .datetime {
+  font-size: 11px;
+}
+
+#logTable .client {
+}
+
+#logTable .action {
+}
+
+#logTable .url {
+  font-size: 12px;
+}
+
+.black {
+  color: #000000;
+  /*background-color: #D3D3D3;*/
+  /*(*+border-radius: 2px;*)
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;*/
+  /*padding: 0px 5px;*/
+  font-weight: bold;
+}
+
+.green {
+  color: #02AB25;
+  /*background-color: #92E492;*/
+  /*(*+border-radius: 2px;*)
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;*/
+  /*padding: 0px 5px;*/
+  font-weight: bold;
+}
+
+.red {
+  color: #D90000;
+  /*background-color: #F49A9A;*/
+  /*(*+border-radius: 2px;*)
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;*/
+  /*padding: 0px 5px;*/
+  font-weight: bold;
+}
+
+.blue {
+  color: #0062D5;
+  /*background-color: #99D5F3;*/
+  /*(*+border-radius: 2px;*)
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;*/
+  /*padding: 0px 5px;*/
+  font-weight: bold;
+}
+
+.darkred {
+  color: #FFFFFF;
+  background-color: #8D0000;
+  /*+border-radius: 0px;*/
+  -moz-border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -khtml-border-radius: 0px;
+  border-radius: 0px;
+  padding: 0px 5px 3px;
+  font-weight: bold;
+}
