@@ -66,7 +66,7 @@ namespace RKNET_ApiServer.Api.Yandex
             // МЕНЮ
 
             var menu = new RKNET_ApiServer.Api.Yandex.Models.Menu();
-            var hostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";            
+            var hostUrl = $"{HttpContext.Request.Scheme}://api.ludilove.ru"; //{HttpContext.Request.Host}";            
 
             // категории
             var categories = rknetdb.MenuCategorys.ToList();

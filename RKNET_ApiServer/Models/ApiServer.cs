@@ -2,7 +2,7 @@
 {
     public class ApiServer
     {
-        public static string version = "1.4.22";       
+        public static string version = "1.4.23";       
         public static IConfiguration Configuration; // конфигурация Апи сервера, присваивается в Program при старте приложения                
     }
 }
