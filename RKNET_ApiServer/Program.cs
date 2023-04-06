@@ -46,12 +46,23 @@ builder.Services.Configure<IISServerOptions>(options =>
 });
 
 
+// проверка тест-режима (0 - не тест)
+bool isTest = builder.Configuration.GetSection("TestMode")["test"] != "0";
 // подключаем БД sqlite
 var sqliteString = builder.Configuration.GetConnectionString("sqlite");
 builder.Services.AddDbContext<RKNET_ApiServer.DB.RknetDbContext>(options => options.UseSqlite(sqliteString));
 
 // подключаем БД mssql
-var mssqlString = builder.Configuration.GetConnectionString("mssql");
+string? mssqlString;
+if (isTest)
+{
+    mssqlString = builder.Configuration.GetConnectionString("mssqltest");
+}
+else
+{
+    mssqlString = builder.Configuration.GetConnectionString("mssql");
+}
+ 
 builder.Services.AddDbContext<RKNET_ApiServer.DB.MSSQLDBContext>(options => 
 {
     options.UseSqlServer(mssqlString,
@@ -86,8 +97,16 @@ builder.Services.AddIdentityServer(options =>
 builder.Services.AddTransient<IdentityServer4.Hosting.IEndpointRouter, CustomEndpointRouter>(); // меняем конечные точки подключения OAuth 2.0
 
 
+string? hostUrl;
 // Параметры приложения для авторизации с использование сервера OAuth
-var hostUrl = "http://api.rknet-server.shzhleb.ru";
+if (isTest)
+{
+    hostUrl = builder.Configuration.GetSection("Host")["test"];
+}
+else
+{
+    hostUrl = builder.Configuration.GetSection("Host")["default"];
+}
 if (builder.Environment.IsDevelopment())
 {
     hostUrl = "https://localhost:5224";

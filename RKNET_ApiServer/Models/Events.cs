@@ -39,8 +39,8 @@ namespace RKNET_ApiServer.Models
             timerHour.Elapsed += Hourly;
             timerHour.AutoReset = true;
             timerHour.Start();
-          
-            RemoveOldDeliveryStops();            
+
+            RemoveOldDeliveryStops();
         }
         // -------------------------------------------------------------
         // События по таймеру
@@ -65,7 +65,7 @@ namespace RKNET_ApiServer.Models
             CheckClientsUpdate();
         }
 
-        
+
 
         // -------------------------------------------------------------
         // Логи запросов
@@ -122,7 +122,7 @@ namespace RKNET_ApiServer.Models
             var mssql = MSSQLDbContext();
             mssql.AgregatorErrors.Add(agregatorError);
             mssql.SaveChanges();
-            
+
             // Отправляем лог в Zabbix
             zabbix_lib.ZabbixSender.Send(agregatorError);
         }
@@ -132,7 +132,7 @@ namespace RKNET_ApiServer.Models
         // -------------------------------------------------------------        
         // обновление данных всех подключённых кассовых клиентов и вывод на web страничку
         public static void CashClientsUpdate()
-        {            
+        {
             var mssqldb = MSSQLDbContext();
             foreach (var client in SignalR.CashesHub.cashClients)
             {
@@ -150,7 +150,7 @@ namespace RKNET_ApiServer.Models
             }
             SignalR.EventsHub.Current.Clients.All.SendAsync("CashClientsToWeb");
         }
-        
+
         // обновление данных конкретного кассового клиента и вывод на web страничку
         public static void CashClientsUpdate(string clientId)
         {
@@ -174,13 +174,13 @@ namespace RKNET_ApiServer.Models
                 client.LastSeen = DateTime.Now;
                 UpdateCashClientsTable(client);
             }
-            SignalR.EventsHub.Current.Clients.All.SendAsync("CashClientsToWeb");                        
+            SignalR.EventsHub.Current.Clients.All.SendAsync("CashClientsToWeb");
         }
 
         // Автообновление одного клиента
         public static void AutoUpdateClient(string clientId)
         {
-            SignalR.CashesHub.Current.Clients.Client(clientId).SendAsync("AutoUpdate");            
+            SignalR.CashesHub.Current.Clients.Client(clientId).SendAsync("AutoUpdate");
         }
 
         // Автообновление всех клиентов
@@ -243,8 +243,8 @@ namespace RKNET_ApiServer.Models
             {
                 rknetdb.CashClients.Add(client);
                 rknetdb.SaveChanges();
-            }                   
-            
+            }
+
 
             // обновляем клиент при необходимости
             if (isNeedUpdate)
@@ -252,7 +252,7 @@ namespace RKNET_ApiServer.Models
                 //SignalR.CashesHub.Current.Clients.Client(client.ClientId).SendAsync("AutoUpdate");
             }
         }
-        
+
         // Проверка наличия обновлений клиентов
         public static void CheckClientsUpdate()
         {
@@ -286,7 +286,7 @@ namespace RKNET_ApiServer.Models
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Models.Logging.LocalLog($"ошибка Events -> CheckClientsUpdate: {ex.Message}");
             }
@@ -328,8 +328,8 @@ namespace RKNET_ApiServer.Models
 
                 mssql.Orderlogs.Add(orderLog);
                 mssql.SaveChanges();
-            }  
-            catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Models.Logging.LocalLog($"ошибка RKNET_ApiServer.Models.Events.NewOrder: {ex.Message}");
             }
@@ -356,7 +356,7 @@ namespace RKNET_ApiServer.Models
                 mssql.Orderlogs.Add(orderLog);
                 mssql.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Models.Logging.LocalLog($"ошибка RKNET_ApiServer.Models.Events.OrderAccepted: {ex.Message}");
             }
@@ -397,7 +397,7 @@ namespace RKNET_ApiServer.Models
                 mssql.Orderlogs.Add(orderLog);
                 mssql.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Models.Logging.LocalLog($"ошибка RKNET_ApiServer.Models.Events.OrderCancel: {ex.Message}");
             }
@@ -435,11 +435,11 @@ namespace RKNET_ApiServer.Models
                 mssql.Orderlogs.Add(orderLog);
                 mssql.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Models.Logging.LocalLog($"ошибка RKNET_ApiServer.Models.Events.OrderUpdate: {ex.Message}");
             }
-        }        
+        }
         public static void OrderFinished(RKNet_Model.MSSQL.MarketOrder order)
         {
             try
@@ -461,12 +461,12 @@ namespace RKNET_ApiServer.Models
                 mssql.Orderlogs.Add(orderLog);
                 mssql.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Models.Logging.LocalLog($"ошибка RKNET_ApiServer.Models.Events.OrderFinished: {ex.Message}");
             }
         }
-        
+
         // -------------------------------------------------------------
         // Стопы ресторана
         // -------------------------------------------------------------
@@ -487,7 +487,7 @@ namespace RKNET_ApiServer.Models
                 mssql.DeliveryItemStops.UpdateRange(removeItems);
                 mssql.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Models.Logging.LocalLog($"ошибка RKNET_ApiServer.Models.Events.RemoveOldDeliveryStops: {ex.Message}");
             }
@@ -538,7 +538,7 @@ namespace RKNET_ApiServer.Models
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Models.Logging.LocalLog($"ошибка RKNET_ApiServer.Models.Events.NullOrdersNotification: {ex.Message}");
             }
