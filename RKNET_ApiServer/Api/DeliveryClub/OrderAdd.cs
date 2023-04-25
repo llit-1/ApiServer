@@ -197,6 +197,7 @@ namespace RKNET_ApiServer.Api.DeliveryClub
                     // добавляем позицию в OrderItems                
                     var orderItem = new RKNet_Model.MSSQL.MarketOrder.OrderItem();
                     orderItem.MenuItemId = menuItem.Id;
+                    orderItem.RkCode = menuItem.rkCode;
                     orderItem.RkName = menuItem.rkName;
                     orderItem.MarketName = product.name;
                     orderItem.MarketPrice = int.Parse(product.price);
@@ -214,6 +215,11 @@ namespace RKNET_ApiServer.Api.DeliveryClub
                     marketOrder.Created = DateTime.Now;
                     marketOrder.TTName = tt.Name;
                     marketOrder.TTCode = tt.Code;
+                    var cashStation = rknetdb.CashStations.FirstOrDefault(x => x.TT.Code == marketOrder.TTCode);
+                    if (cashStation != null)
+                    {
+                        marketOrder.FirstMidserver = cashStation.Midserver;
+                    }
                     if (newOrder.price != null)
                     {
                         marketOrder.OrderSum = newOrder.price.total;

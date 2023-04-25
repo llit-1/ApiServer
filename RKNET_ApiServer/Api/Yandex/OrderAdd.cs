@@ -1,7 +1,5 @@
-﻿using IdentityServer4.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RKNet_Model;
 using RKNet_Model.MSSQL;
 
 namespace RKNET_ApiServer.Api.Yandex
@@ -28,27 +26,27 @@ namespace RKNET_ApiServer.Api.Yandex
             errors = new Errors();
 
             AddHeaders();
-                     
+
             try
             {
-                CheckDuplicates(newOrder);                
+                CheckDuplicates(newOrder);
                 var tt = TTData(newOrder);
                 var clientId = ClientId();
 
                 CheckRkDisabledItems(newOrder);
                 CheckCashStops(newOrder, tt);
                 CheckDeliveryStops(newOrder, tt);
-                CheckDeliveryType(newOrder);                
+                CheckDeliveryType(newOrder);
 
-                if(errors.criticalErrors.Count == 0)
+                if (errors.criticalErrors.Count == 0)
                 {
                     Response.StatusCode = 200;
 
-                    var result = SaveOrder(newOrder, tt);                    
+                    var result = SaveOrder(newOrder, tt);
 
                     if (result.Ok)
                     {
-                        var marketOrder = result.Data;                        
+                        var marketOrder = result.Data;
                         var response = new Api.Yandex.Models.Order.Response();
                         response.result = "ok";
                         response.orderId = result.Data.Id.ToString();
@@ -95,7 +93,7 @@ namespace RKNET_ApiServer.Api.Yandex
                     return new ObjectResult(yaErrors);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 var errorMessage = $"ошибка RKNET_ApiServer.Api.Yandex.Actions.OrderCreate: {ex.Message}";
                 var yaErrors = new List<Api.Yandex.Models.Error>();
@@ -106,11 +104,11 @@ namespace RKNET_ApiServer.Api.Yandex
                 });
 
                 Response.StatusCode = 500;
-                if (isLogging) { ErrorLog(requestName, newOrder.restaurantId, errorMessage,Newtonsoft.Json.JsonConvert.SerializeObject(yaErrors), newOrder.eatsId); }
+                if (isLogging) { ErrorLog(requestName, newOrder.restaurantId, errorMessage, Newtonsoft.Json.JsonConvert.SerializeObject(yaErrors), newOrder.eatsId); }
                 RKNET_ApiServer.Models.Logging.LocalLog(errorMessage);
 
                 return new ObjectResult(yaErrors);
-            }                
+            }
         }
 
         //----------------------------------------------------------
@@ -135,11 +133,16 @@ namespace RKNET_ApiServer.Api.Yandex
             {
 
                 var marketOrder = new RKNet_Model.MSSQL.MarketOrder();
-                var orderItems = OrderItems(newOrder);               
+                var orderItems = OrderItems(newOrder);
 
                 marketOrder.Created = DateTime.Now;
                 marketOrder.TTName = tt.Name;
                 marketOrder.TTCode = tt.Code;
+                var cashStation = rknetdb.CashStations.FirstOrDefault(x => x.TT.Code == marketOrder.TTCode);
+                if (cashStation != null)
+                {
+                    marketOrder.FirstMidserver = cashStation.Midserver;
+                }
                 if (newOrder.paymentInfo != null)
                 {
                     marketOrder.OrderSum = newOrder.paymentInfo.itemsCost;
@@ -151,7 +154,7 @@ namespace RKNET_ApiServer.Api.Yandex
                 marketOrder.YandexOrder = Newtonsoft.Json.JsonConvert.SerializeObject(newOrder);
                 marketOrder.StatusUpdatedAt = DateTime.Now;
 
-                if(errors.cancelErrors.Count == 0)
+                if (errors.cancelErrors.Count == 0)
                 {
                     marketOrder.StatusName = RKNet_Model.MSSQL.MarketOrder.OrderStatuses.Yandex.NEW.Name;
                     marketOrder.StatusCode = RKNet_Model.MSSQL.MarketOrder.OrderStatuses.Yandex.NEW.Code;
@@ -163,8 +166,8 @@ namespace RKNET_ApiServer.Api.Yandex
 
                     marketOrder.StatusComment = "автоматически отменён";
                     marketOrder.CancelReason = errors.cancelErrors.First();
-                }                
-                
+                }
+
                 mssqldb.MarketOrders.Add(marketOrder);
                 mssqldb.SaveChanges();
 
@@ -177,7 +180,7 @@ namespace RKNET_ApiServer.Api.Yandex
                 else
                 {
                     result.Ok = false;
-                    result.ErrorMessage = $"ошибка размещения заказа в БД: не присвоен внутренний Id заказу";                                        
+                    result.ErrorMessage = $"ошибка размещения заказа в БД: не присвоен внутренний Id заказу";
                 }
             }
             catch (Exception ex)
@@ -194,7 +197,7 @@ namespace RKNET_ApiServer.Api.Yandex
         {
             var orderItems = new List<RKNet_Model.MSSQL.MarketOrder.OrderItem>();
             try
-            {                
+            {
                 var menu = new R_Keeper.Actions(rknetdb).GetRkMenu();
                 var rkCodes = RkCodes(menu.Data);
 
@@ -216,16 +219,17 @@ namespace RKNET_ApiServer.Api.Yandex
                         menuItem = rknetdb.MenuItems.FirstOrDefault(i => i.marketName == yandexItem.name);
                         if (menuItem != null & firstItem)
                         {
-                            errors.infoErrors.Add($"переданы неверные id блюд по заказу eatsId={newOrder.eatsId} ({yandexItem.name}: {yandexItem.id} вместо {menuItem.Id}, всего {newOrder.items.Count} позиций)");                            
+                            errors.infoErrors.Add($"переданы неверные id блюд по заказу eatsId={newOrder.eatsId} ({yandexItem.name}: {yandexItem.id} вместо {menuItem.Id}, всего {newOrder.items.Count} позиций)");
                             firstItem = false;
                         }
                     }
 
                     // добавляем позицию в OrderItems
                     if (menuItem != null)
-                    {                                    
+                    {
                         var orderItem = new RKNet_Model.MSSQL.MarketOrder.OrderItem();
                         orderItem.MenuItemId = menuItem.Id;
+                        orderItem.RkCode = menuItem.rkCode;
                         orderItem.RkName = menuItem.rkName;
                         orderItem.MarketName = yandexItem.name;
                         orderItem.MarketPrice = (int)yandexItem.price;
@@ -245,19 +249,19 @@ namespace RKNET_ApiServer.Api.Yandex
                         {
                             errors.cancelErrors.Add($"блюдо {yandexItem.name} не активно в Р-Кипер");
                         }
-                    }                    
+                    }
                     else
                     {
                         errors.cancelErrors.Add($"блюдо {yandexItem.name} отсутствует в меню доставки");
-                    }                                      
+                    }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 RKNET_ApiServer.Models.Logging.LocalLog($"ошибка RKNET_ApiServer.Api.Yandex.Actions.OrderItems (OrderAdd): {ex.Message}");
             }
             return orderItems;
-        }               
+        }
 
         // Cписок кодов позиций из меню Р-Кипер
         private List<int> RkCodes(List<RKNet_Model.Menu.rkMenuItem> rkItems)
@@ -277,7 +281,7 @@ namespace RKNET_ApiServer.Api.Yandex
             }
             return rkCodes;
         }
-        
+
         // Проеряем заказ на дубли
         private void CheckDuplicates(Api.Yandex.Models.Order newOrder)
         {
@@ -330,7 +334,7 @@ namespace RKNET_ApiServer.Api.Yandex
                 }
             }
         }
-    
+
         // СТОПы на кассах
         private void CheckCashStops(Api.Yandex.Models.Order newOrder, RKNet_Model.TT.TT tt)
         {
@@ -345,7 +349,7 @@ namespace RKNET_ApiServer.Api.Yandex
 
                 if (blockedItem != null & stopTTIDs.Contains(tt.Id))
                 {
-                    errors.cancelErrors.Add( $"блюдо {stop.SkuName} находится в стоп-листе на кассах");
+                    errors.cancelErrors.Add($"блюдо {stop.SkuName} находится в стоп-листе на кассах");
                 }
             }
         }
