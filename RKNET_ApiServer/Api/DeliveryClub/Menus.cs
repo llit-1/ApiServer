@@ -33,7 +33,7 @@ namespace RKNET_ApiServer.Api.DeliveryClub
 
             // меню
             var DeliveryClubMenu = new RKNET_ApiServer.Api.DeliveryClub.Models.Menu();
-            var hostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
+            var hostUrl = $"{HttpContext.Request.Scheme}://api.ludilove.ru"; //{HttpContext.Request.Host}";        
 
             // последнее изменение меню
             var lastChange = rknetdb.LastChanges.FirstOrDefault(l => l.Name == "Меню");
