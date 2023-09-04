@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RKNET_ApiServer.Api.Yandex.Models;
 
 namespace RKNET_ApiServer.Api.Yandex
 {
@@ -256,8 +257,8 @@ namespace RKNET_ApiServer.Api.Yandex
                 {
                     currentOrder.OrderSum = updatedYandexOrder.paymentInfo.itemsCost;
                 }
-                currentOrder.YandexOrder = Newtonsoft.Json.JsonConvert.SerializeObject(updatedYandexOrder);                                
-
+                currentOrder.YandexOrder = Newtonsoft.Json.JsonConvert.SerializeObject(updatedYandexOrder);
+                currentOrder.OrderItems = Newtonsoft.Json.JsonConvert.SerializeObject(PublicMethods.OrderItems(updatedYandexOrder, rknetdb));
                 mssqldb.MarketOrders.Update(currentOrder);
                 mssqldb.SaveChanges();
 
