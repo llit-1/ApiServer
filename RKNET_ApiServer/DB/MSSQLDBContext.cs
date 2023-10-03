@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
+using RKNET_ApiServer.DB.Models;
 
 namespace RKNET_ApiServer.DB
 {
@@ -19,6 +19,7 @@ namespace RKNET_ApiServer.DB
         public DbSet<RKNet_Model.MSSQL.RequestLog> RequestLogs { get; set; } // логи запросов к Апи серверу
         public DbSet<RKNet_Model.MSSQL.DeliveryItemStop> DeliveryItemStops { get; set; } // стопы блюд с доставкой по ТТ
         public DbSet<zabbix_lib.AgregatorError> AgregatorErrors { get; set; } // логи ошибок агрегаторов
+        public DbSet<SaleObjectsAgregator> SaleObjectsAgregators  { get; set; } // продажи агрегаторов по позициям
 
     }
 }

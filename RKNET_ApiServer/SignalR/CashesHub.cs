@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections;
 using RKNET_ApiServer.Models;
 using RKNET_ApiServer.Api.Yandex.Models;
+using RKNET_ApiServer.DB.Models;
+using RKNet_Model.MSSQL;
+using RKNet_Model.TT;
+using RKNET_ApiServer.Api.R_Keeper.Rk7XML;
 
 namespace RKNET_ApiServer.SignalR
 {
@@ -192,6 +196,16 @@ namespace RKNET_ApiServer.SignalR
                     // отклонен на кассе
                     else
                     {
+                        if (order.StatusCode == 1) //если заказ отменили не принимая
+                        {
+                            //Записываем позиции в SaleObjectAgregators
+                            SaleobjectsSave(order, 1);
+                        }
+                        else //если заказ отменили после принятия
+                        {
+                            //Записываем позиции в SaleObjectAgregators
+                            SaleobjectsSave(order, 2);
+                        }
                         switch (order.OrderTypeCode)
                         {
                             // Яндекс
@@ -212,7 +226,9 @@ namespace RKNET_ApiServer.SignalR
                                 order.StatusUpdatedAt = DateTime.Now;
                                 order.CancelReason = "отменён на тт";
                                 break;
-                        }                        
+                        }
+
+
                     }
                     mssql.MarketOrders.Update(order);
                     mssql.SaveChanges();
@@ -259,7 +275,8 @@ namespace RKNET_ApiServer.SignalR
                     }
                     mssql.MarketOrders.Update(order);
                     mssql.SaveChanges();
-
+                    //Записываем позиции в SaleObjectAgregators
+                    SaleobjectsSave(order, 0);
                     // генерируем событие отмены заказа
                     RKNET_ApiServer.Models.Events.OrderFinished(order);
                 }
@@ -307,5 +324,46 @@ namespace RKNET_ApiServer.SignalR
                 Logging.LocalLog($"ошибка RKNET_ApiServer.SignalR.CashesHub.PingReceived: {ex.Message}");
             }
         }
+
+        public void SaleobjectsSave(MarketOrder order, int delete)
+        {
+            // выпадаем из метода если в базе уже есть этот заказ
+            if (mssql.SaleObjectsAgregators.FirstOrDefault(c => c.OrderNumber == order.OrderNumber) != null)
+            {
+                return;
+            }           
+            List<MarketOrder.OrderItem> orderItems = Newtonsoft.Json.JsonConvert.DeserializeObject<List<MarketOrder.OrderItem>>(order.OrderItems);
+            foreach (var item in orderItems)
+            {
+                SaleObjectsAgregator saleObjectsAgregator = new SaleObjectsAgregator();
+                saleObjectsAgregator.Midserver = order.FirstMidserver;
+                saleObjectsAgregator.Code = item.RkCode;
+                saleObjectsAgregator.SumWithDiscount = item.MenuPrice;
+                saleObjectsAgregator.SumWithoutDiscount = item.MenuPrice;
+                saleObjectsAgregator.Quantity = item.Quantity;
+                saleObjectsAgregator.Date = order.Created;
+                saleObjectsAgregator.OrderType = 1014626;
+                saleObjectsAgregator.OrderNumber = order.OrderNumber;
+                if (order.YandexOrder != null)
+                {
+                    saleObjectsAgregator.Currency = 1010536;
+                }
+                else
+                {
+                    saleObjectsAgregator.Currency = 1013070;
+                }
+                RKNet_Model.Rk7XML.CashStation cashStation = rknetdb.CashStations
+                                                .Include(c => c.TT)
+                                                .AsNoTracking()
+                                                .FirstOrDefault(c => c.Midserver == order.FirstMidserver);
+                saleObjectsAgregator.Restaurant = cashStation?.TT?.Restaurant_Sifr;
+                saleObjectsAgregator.Deleted = delete;
+                saleObjectsAgregator.Hour = order.Created.Hour;
+                saleObjectsAgregator.Time = order.Created.Hour * 10000 + order.Created.Minute * 100 + order.Created.Second;
+                mssql.SaleObjectsAgregators.Add(saleObjectsAgregator);
+            }
+            mssql.SaveChanges();
+        }
+
     }
 }
