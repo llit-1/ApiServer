@@ -338,8 +338,8 @@ namespace RKNET_ApiServer.SignalR
                 SaleObjectsAgregator saleObjectsAgregator = new SaleObjectsAgregator();
                 saleObjectsAgregator.Midserver = order.FirstMidserver;
                 saleObjectsAgregator.Code = item.RkCode;
-                saleObjectsAgregator.SumWithDiscount = item.MenuPrice;
-                saleObjectsAgregator.SumWithoutDiscount = item.MenuPrice;
+                saleObjectsAgregator.SumWithDiscount = item.MenuPrice * item.Quantity;
+                saleObjectsAgregator.SumWithoutDiscount = item.MenuPrice * item.Quantity;
                 saleObjectsAgregator.Quantity = item.Quantity;
                 saleObjectsAgregator.Date = order.Created;
                 saleObjectsAgregator.OrderType = 1014626;
