@@ -88,7 +88,7 @@ namespace RKNET_ApiServer.Api.Yandex.Models
             {
                 foreach (var item in saleObjectsAgregators)
                 {
-                    item.Deleted = 3;
+                    item.Deleted = code;
                     mssqldb.SaleObjectsAgregators.Update(item);
                 }
                 mssqldb.SaveChanges();

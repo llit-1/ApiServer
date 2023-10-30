@@ -101,7 +101,7 @@ namespace RKNET_ApiServer.Models
             SignalR.EventsHub.Current.Clients.All.SendAsync("Logging", JsonConvert.SerializeObject(reqLog));
 
             // Пишем лог в БД            
-            if (reqLog.Client.ToLower().Contains("yandex") || reqLog.Client.ToLower().Contains("delivery") || reqLog.Status.Code == 0)
+            if ((reqLog.Client.ToLower().Contains("yandex") || reqLog.Client.ToLower().Contains("delivery") || reqLog.Status.Code == 0) && reqLog.Status.Code != 200)
             {
                 var requestLog = new RKNet_Model.MSSQL.RequestLog();
                 requestLog.Client = reqLog.Client;
