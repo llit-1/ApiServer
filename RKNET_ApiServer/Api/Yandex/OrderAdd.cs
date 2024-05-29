@@ -198,8 +198,8 @@ namespace RKNET_ApiServer.Api.Yandex
             var orderItems = new List<RKNet_Model.MSSQL.MarketOrder.OrderItem>();
             try
             {
-                var menu = new R_Keeper.Actions(rknetdb).GetRkMenu();
-                var rkCodes = RkCodes(menu.Data);
+                //var menu = new R_Keeper.Actions(rknetdb).GetRkMenu();
+                //var rkCodes = RkCodes(menu.Data);
 
                 var firstItem = true;
                 foreach (var yandexItem in newOrder.items)
@@ -238,17 +238,12 @@ namespace RKNET_ApiServer.Api.Yandex
                         orderItem.TotalCost = orderItem.MarketPrice * orderItem.Quantity;
                         orderItems.Add(orderItem);
 
-                        // название позиции в меню отличается от названия в заказе
-                        if (yandexItem.name != menuItem.marketName)
-                        {
-                            errors.infoErrors.Add($"блюдо {yandexItem.name} в меню ресторана имеет другое название: {menuItem.marketName}");
-                        }
 
                         // блюдо было удалено или отключено в РК
-                        if (!rkCodes.Contains(menuItem.rkCode))
-                        {
-                            errors.cancelErrors.Add($"блюдо {yandexItem.name} не активно в Р-Кипер");
-                        }
+                        //if (!rkCodes.Contains(menuItem.rkCode))
+                        //{
+                        //    errors.cancelErrors.Add($"блюдо {yandexItem.name} не активно в Р-Кипер");
+                        //}
                     }
                     else
                     {

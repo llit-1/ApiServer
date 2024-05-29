@@ -127,8 +127,8 @@ namespace RKNET_ApiServer.Api.Yandex
             }                        
 
             // проверяем наличие позиции в меню доставки и на сервере справочников Р-Кипер, соотвестиве названий
-            var menu = new R_Keeper.Actions(rknetdb).GetRkMenu();
-            var rkCodes = RkCodes(menu.Data);
+            //var menu = new R_Keeper.Actions(rknetdb).GetRkMenu();
+            //var rkCodes = RkCodes(menu.Data);
 
             foreach (var orderItem in updatedYandexOrder.items)
             {
@@ -156,36 +156,6 @@ namespace RKNET_ApiServer.Api.Yandex
                 if (menuItem == null)
                 {
                     var errorMessage = $"блюдо {orderItem.name} отсутствует в меню";
-                    var errors = new List<Api.Yandex.Models.Error>();
-                    errors.Add(new Api.Yandex.Models.Error
-                    {
-                        code = 100,
-                        description = errorMessage
-                    });
-
-                    Response.StatusCode = 400;
-                    if (isLogging) ErrorLog(requestName, restaurantId, errorMessage);
-                    return new ObjectResult(errors);
-                }
-                // название позиции в меню отличнается от названия в заказе
-                if (orderItem.name != menuItem.marketName)
-                {
-                    var errorMessage = $"блюдо {orderItem.name} в меню ресторана имеет другое название: {menuItem.marketName}";
-                    var errors = new List<Api.Yandex.Models.Error>();
-                    errors.Add(new Api.Yandex.Models.Error
-                    {
-                        code = 100,
-                        description = errorMessage
-                    });
-
-                    Response.StatusCode = 400;
-                    if (isLogging) ErrorLog(requestName, restaurantId, errorMessage);
-                    return new ObjectResult(errors);
-                }
-                // блюдо было удалено или отключено в РК
-                if (!rkCodes.Contains(menuItem.rkCode))
-                {
-                    var errorMessage = $"блюдо {orderItem.name} не активно в Р-Кипер";
                     var errors = new List<Api.Yandex.Models.Error>();
                     errors.Add(new Api.Yandex.Models.Error
                     {

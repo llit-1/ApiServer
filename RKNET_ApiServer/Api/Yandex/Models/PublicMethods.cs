@@ -13,8 +13,8 @@ namespace RKNET_ApiServer.Api.Yandex.Models
             var orderItems = new List<RKNet_Model.MSSQL.MarketOrder.OrderItem>();
             try
             {
-                var menu = new R_Keeper.Actions(rknetdb).GetRkMenu();
-                var rkCodes = RkCodes(menu.Data);
+                //var menu = new R_Keeper.Actions(rknetdb).GetRkMenu();
+                //var rkCodes = RkCodes(menu.Data);
 
                 var firstItem = true;
                 foreach (var yandexItem in newOrder.items)

@@ -132,8 +132,8 @@ namespace RKNET_ApiServer.Api.DeliveryClub
 
 
                 // проверяем наличие позиции в меню доставки и на сервере справочников Р-Кипер, соотвествие названий
-                var menu = new R_Keeper.Actions(rknetdb).GetRkMenu();
-                var rkCodes = RkCodes(menu.Data);
+                //var menu = new R_Keeper.Actions(rknetdb).GetRkMenu();
+                //var rkCodes = RkCodes(menu.Data);
                 var orderItems = new List<RKNet_Model.MSSQL.MarketOrder.OrderItem>();
 
                 foreach (var product in newOrder.products)
@@ -166,33 +166,20 @@ namespace RKNET_ApiServer.Api.DeliveryClub
                         Response.StatusCode = 400;
                         if (isLogging) ErrorLog(requestName, restaurantId, error.message, Newtonsoft.Json.JsonConvert.SerializeObject(error), newOrder.originalOrderId);
                         return new ObjectResult(error);
-                    }
-                    // название позиции в меню отличнается от названия в заказе
-                    if (product.name != menuItem.marketName)
-                    {
-                        var error = new Api.DeliveryClub.Models.RejectingReason
-                        {
-                            code = "product_unavailable",
-                            message = $"блюдо {product.name} в меню ресторана имеет другое название: {menuItem.marketName}"
-                        };
-
-                        Response.StatusCode = 400;
-                        if (isLogging) ErrorLog(requestName, restaurantId, error.message, Newtonsoft.Json.JsonConvert.SerializeObject(error), newOrder.originalOrderId);
-                        return new ObjectResult(error);
-                    }
+                    }                    
                     // блюдо было удалено или отключено в РК
-                    if (!rkCodes.Contains(menuItem.rkCode))
-                    {
-                        var error = new Api.DeliveryClub.Models.RejectingReason
-                        {
-                            code = "product_unavailable",
-                            message = $"блюдо {product.name} не активно в Р-Кипер"
-                        };
+                    //if (!rkCodes.Contains(menuItem.rkCode))
+                    //{
+                    //    var error = new Api.DeliveryClub.Models.RejectingReason
+                    //    {
+                    //        code = "product_unavailable",
+                    //        message = $"блюдо {product.name} не активно в Р-Кипер"
+                    //    };
 
-                        Response.StatusCode = 400;
-                        if (isLogging) ErrorLog(requestName, restaurantId, error.message, Newtonsoft.Json.JsonConvert.SerializeObject(error), newOrder.originalOrderId);
-                        return new ObjectResult(error);
-                    }
+                    //    Response.StatusCode = 400;
+                    //    if (isLogging) ErrorLog(requestName, restaurantId, error.message, Newtonsoft.Json.JsonConvert.SerializeObject(error), newOrder.originalOrderId);
+                    //    return new ObjectResult(error);
+                    //}
 
                     // добавляем позицию в OrderItems                
                     var orderItem = new RKNet_Model.MSSQL.MarketOrder.OrderItem();
