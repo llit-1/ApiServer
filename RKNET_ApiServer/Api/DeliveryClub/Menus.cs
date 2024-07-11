@@ -65,10 +65,10 @@ namespace RKNET_ApiServer.Api.DeliveryClub
 
                 newItem.id = item.Id.ToString();
                 newItem.categoryId = item.ParentCategory.Id.ToString();
-                newItem.name = item.marketName;                
+                newItem.name = item.marketName;
                 newItem.price = item.rkDeliveryPrice;
                 newItem.description = item.Description;
-                newItem.imageUrl = hostUrl + "/Yandex/menu/itemImage/" + item.Id + "/image.jpg";
+                newItem.imageUrl = hostUrl + "/Yandex/menu/itemImage/" + item.Id + "/" + DateTime.Now.Day.ToString() + DateTime.Now.Second.ToString() + ".jpg"; ;
 
                 switch (item.MeasureUnit.Id)
                 {

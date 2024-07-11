@@ -16,6 +16,7 @@ namespace RKNET_ApiServer.Api.Yandex
         /// <param name="restaurantId">код тт</param>
         /// <returns></returns>
         [HttpGet("Yandex/menu/{restaurantId}/composition")]
+        [AllowAnonymous]
         public IActionResult MenuComposition(string restaurantId)
         {
             var isLogging = true;
@@ -80,7 +81,7 @@ namespace RKNET_ApiServer.Api.Yandex
 
                 var img = new RKNET_ApiServer.Api.Yandex.Models.Menu.CategoryImage();
                 img.updatedAt = cat.ImageUpdated;
-                img.url = hostUrl + "/Yandex/menu/catImage/" + cat.Id + "/image.jpg";
+                img.url = hostUrl + "/Yandex/menu/catImage/" + cat.Id + "/" + DateTime.Now.Day.ToString() + DateTime.Now.Second.ToString() + ".jpg";
 
                 newCat.images.Add(img);
                 menu.categories.Add(newCat);                
@@ -102,7 +103,7 @@ namespace RKNET_ApiServer.Api.Yandex
 
                 var img = new RKNET_ApiServer.Api.Yandex.Models.Menu.ItemImage();                               
                 img.hash = item.ImageHash;
-                img.url = hostUrl + "/Yandex/menu/itemImage/" + item.Id + "/image.jpg";
+                img.url = hostUrl + "/Yandex/menu/itemImage/" + item.Id + "/" + DateTime.Now.Day.ToString() + DateTime.Now.Second.ToString() + ".jpg";
 
                 newItem.images.Add(img);
                 menu.items.Add(newItem);
