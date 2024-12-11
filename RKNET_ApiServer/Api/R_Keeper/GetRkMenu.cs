@@ -125,7 +125,8 @@ namespace RKNET_ApiServer.Api.R_Keeper
                 item.rkName = rkItem.Name;
                 item.rkCode = int.Parse(rkItem.Code);
 
-                var price = rkItem.deliveryPrice;
+                var price = rkItem.PRICETYPES_1017292;
+
                 if(price == "9223372036854775807")
                 {
                     item.deliveryPrice = 0;
