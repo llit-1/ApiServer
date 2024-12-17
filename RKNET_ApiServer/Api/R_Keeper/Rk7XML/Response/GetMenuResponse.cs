@@ -68,8 +68,8 @@ namespace RKNET_ApiServer.Api.R_Keeper.Rk7XML.Response
             public string Name { get; set; }
             [XmlAttribute]
             public string deliveryPrice { get; set; }
-            [XmlAttribute("PRICETYPES-1017292")]
-            public string PRICETYPES_1017292 { get; set; }
+            [XmlAttribute("PRICETYPES-1017607")]
+            public string PRICETYPES_1017607 { get; set; }
         }
 
         [Serializable]
