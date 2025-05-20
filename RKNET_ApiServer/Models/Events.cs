@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using RKNET_ApiServer.Api.Yandex.Models;
 
 namespace RKNET_ApiServer.Models
 {
@@ -290,6 +291,32 @@ namespace RKNET_ApiServer.Models
             {
                 Models.Logging.LocalLog($"ошибка Events -> CheckClientsUpdate: {ex.Message}");
             }
+        }
+
+
+        // Отправка сообщений на кассы
+        public static void NewMessage(MessageOrder order)
+        {
+            try
+            {
+                foreach (var tt in order.TTs)
+                {
+                    foreach (var cash in tt.CashStations)
+                    {
+                        var cashClients = SignalR.CashesHub.cashClients.Where(c => c.CashId == cash.Id).ToList();
+                        foreach (var cashClient in cashClients)
+                        {
+                            SignalR.CashesHub.Current.Clients.Client(cashClient.ClientId).SendAsync("NewMessage", order.Message);
+                        }
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Models.Logging.LocalLog($"ошибка RKNET_ApiServer.Models.Events.NewMessage: {ex.Message}");
+            }
+
         }
 
         // -------------------------------------------------------------
