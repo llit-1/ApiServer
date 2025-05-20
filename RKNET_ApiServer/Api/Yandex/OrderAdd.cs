@@ -9,6 +9,7 @@ namespace RKNET_ApiServer.Api.Yandex
         bool isLogging;
         string requestName;
         Errors errors;
+        StopListError stopListError;
 
         /// <summary>
         /// Создание заказа
@@ -24,6 +25,7 @@ namespace RKNET_ApiServer.Api.Yandex
             isLogging = true;
             requestName = "размещение заказа";
             errors = new Errors();
+            stopListError = null;
 
             AddHeaders();
 
@@ -37,6 +39,10 @@ namespace RKNET_ApiServer.Api.Yandex
                 CheckCashStops(newOrder, tt);
                 CheckDeliveryStops(newOrder, tt);
                 CheckDeliveryType(newOrder);
+                if (stopListError != null)
+                {
+                    return StatusCode(StatusCodes.Status406NotAcceptable, stopListError);
+                }
 
                 if (errors.criticalErrors.Count == 0)
                 {
@@ -121,6 +127,12 @@ namespace RKNET_ApiServer.Api.Yandex
             public List<string> criticalErrors = new List<string>();    // заказ не принимается
         }
 
+        private class StopListError
+        {
+            public Dictionary<string, string> goods { get; set; } = new Dictionary<string, string>();
+            public string message { get; set; }
+            public string type { get; set; } = "unavailable_goods";
+        }
         //----------------------------------------------------------
         // МЕТОДЫ
         //----------------------------------------------------------
@@ -163,7 +175,6 @@ namespace RKNET_ApiServer.Api.Yandex
                 {
                     marketOrder.StatusName = RKNet_Model.MSSQL.MarketOrder.OrderStatuses.Yandex.CANCELLED.Name;
                     marketOrder.StatusCode = RKNet_Model.MSSQL.MarketOrder.OrderStatuses.Yandex.CANCELLED.Code;
-
                     marketOrder.StatusComment = "автоматически отменён";
                     marketOrder.CancelReason = errors.cancelErrors.First();
                 }
@@ -325,7 +336,10 @@ namespace RKNET_ApiServer.Api.Yandex
             {
                 if (disabledItems.Contains(orderItem.name))
                 {
-                    errors.cancelErrors.Add($"блюдо {orderItem.name} отключено в Р-Кипер");
+                    stopListError = new StopListError();
+                    stopListError.message = $"блюдо {orderItem.name} отключено в Р-Кипер";
+                    stopListError.goods.Add(orderItem.id, orderItem.name);
+                    return;
                 }
             }
         }
@@ -344,7 +358,11 @@ namespace RKNET_ApiServer.Api.Yandex
 
                 if (blockedItem != null & stopTTIDs.Contains(tt.Id))
                 {
-                    errors.cancelErrors.Add($"блюдо {stop.SkuName} находится в стоп-листе на кассах");
+                    var orderItem = rknetdb.MenuItems.FirstOrDefault(c => c.rkCode == blockedItem.rkCode);
+                    stopListError = new StopListError();
+                    stopListError.message = $"блюдо {orderItem.marketName} находится в стоп-листе на кассах";
+                    stopListError.goods.Add(orderItem.Id.ToString(), orderItem.marketName);
+                    return;
                 }
             }
         }
@@ -357,12 +375,14 @@ namespace RKNET_ApiServer.Api.Yandex
                     .Where(s => s.Cancelled == null)
                     .Where(s => s.TTCode == tt.Code)
                     .Select(s => s.ItemMarketName).ToList();
-
             foreach (var orderItem in newOrder.items)
             {
                 if (deliveryStops.Contains(orderItem.name))
                 {
-                    errors.cancelErrors.Add($"блюдо {orderItem.name} находится в стоп-листе ресторана");
+                    stopListError = new StopListError();
+                    stopListError.message = $"блюдо {orderItem.name} находится в стоп-листе ресторана";
+                    stopListError.goods.Add(orderItem.id, orderItem.name);
+                    return;
                 }
             }
         }
